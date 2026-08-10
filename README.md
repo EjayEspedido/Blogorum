@@ -1,93 +1,89 @@
 # Blogorum
 
-A modern forum-style blog website built with Flutter and Supabase.
-
-Blogorum allows users to create, browse, search, edit, and interact with posts in a simple social blogging experience.
+Blogorum is a forum-style blog website built with Flutter and Supabase. It combines a simple blogging experience with social features such as likes, comments, image uploads, search, and user profiles.
 
 ## Features
 
-* User authentication
+- User authentication
+  - Sign up and log in
+  - Forgot password
+  - Log out
+  - User profiles
+- Posts
+  - Create posts
+  - Edit posts
+  - Delete posts
+  - Upload multiple images
+  - Delete images when they are removed from a post
+  - Paginated feed
+  - Pull-to-refresh
+- Search
+  - Search posts by title
+  - Search posts by username
+- Likes
+  - Like and unlike posts
+  - Display like counts
+  - Like interactions restricted to logged-in users
+- Comments
+  - Add comments
+  - Edit comments
+  - Delete comments
+  - Upload images with comments
+  - Display comment counts
+- UI
+  - Responsive web layout
+  - Light and dark themes
+  - Sidebar navigation
+  - Search bar
+  - Create-post shortcut
+  - Post detail pages
+  - Image galleries with navigation controls
 
-  * Sign up and log in
-  * Forgot password support
-  * User profiles
-* Posts
+## Screenshots
 
-  * Create posts
-  * Edit posts
-  * Delete posts
-  * Search posts by title
-  * Search posts by username
-  * Pagination
-  * Pull-to-refresh
-* Likes
+### Feed — Light Mode
 
-  * Like and unlike posts
-  * Like counts
-  * Logged-in users only
-* Comments
+![Blogorum feed in light mode](screenshots/feed-light.png)
 
-  * Add comments
-  * Edit comments
-  * Delete comments
-  * Comment counts
-* Images
+### Feed — Dark Mode
 
-  * Upload images to posts
-  * Delete uploaded images when posts are removed or edited
-* UI
+![Blogorum feed in dark mode](screenshots/feed-dark.png)
 
-  * Responsive web interface
-  * Light and dark themes
-  * Navigation sidebar
-  * Top navigation bar
-  * Floating navigation controls
+### Create Post
+
+![Blogorum create post page](screenshots/create-post.png)
+
+### Post Detail
+
+![Blogorum post detail page](screenshots/post-detail.png)
+
+### Comments and Image Attachments
+
+![Blogorum comments](screenshots/comments.png)
+
+### Comment Interaction Demo
+
+![Blogorum comment interaction demo](screenshots/comments-demo.gif)
 
 ## Tech Stack
 
-| Technology       | Purpose              |
-| ---------------- | -------------------- |
-| Flutter          | Frontend framework   |
-| Dart             | Programming language |
-| Supabase         | Backend and database |
-| PostgreSQL       | Database             |
-| Supabase Auth    | User authentication  |
-| Supabase Storage | Image storage        |
-
-## Project Structure
-
-```
-lib/
-├── main.dart
-├── pages/
-│   ├── FeedPage.dart
-│   ├── login.dart
-│   └── ...
-├── widgets/
-│   ├── post_card.dart
-│   ├── commentCard.dart
-│   ├── commentList.dart
-│   ├── topBar.dart
-│   └── ...
-├── services/
-│   ├── getPosts.dart
-│   ├── getComments.dart
-│   └── ...
-└── ...
-```
-
-> The exact folder structure may vary depending on the current implementation.
+| Technology | Purpose |
+|---|---|
+| Flutter | Frontend framework |
+| Dart | Programming language |
+| Supabase | Backend platform |
+| PostgreSQL | Database |
+| Supabase Auth | Authentication |
+| Supabase Storage | Image storage |
 
 ## Getting Started
 
 ### Prerequisites
 
-Make sure you have the following installed:
-
-* [Flutter](https://flutter.dev/)
-* Dart
-* A Supabase project
-* Git
+- Flutter SDK
+- Dart SDK
+- A Supabase project
+- Git
 
 Check your Flutter installation with:
 
@@ -99,129 +95,130 @@ flutter doctor
 
 Clone the repository:
 
-```
+```bash
 git clone <YOUR_REPOSITORY_URL>
 cd blogorum
 ```
 
 Install dependencies:
 
-```
+```bash
 flutter pub get
 ```
 
 ### Supabase Configuration
 
-Blogorum uses Supabase for authentication, database operations, and storage.
+Blogorum uses Supabase for authentication, database operations, and file storage.
 
-Create a Supabase project and configure the required database tables, authentication, and storage buckets.
+Create a Supabase project and configure the required:
 
-Then configure the Supabase credentials used by the Flutter application.
+- Database tables
+- Row Level Security policies
+- Authentication settings
+- Storage buckets
 
-**Do not commit private Supabase credentials or service-role keys to GitHub.**
+Add the project's public configuration to the application as required by the current Flutter setup.
+
+**Never commit Supabase service-role keys, passwords, or other private credentials to the repository.**
 
 ## Running the Project
 
-Run the application locally with:
+Run the application locally:
 
-```
+```bash
 flutter run
 ```
 
-For Flutter Web:
+Run the web version in Chrome:
 
-```
+```bash
 flutter run -d chrome
 ```
 
-## Building for Web
+Build the production web version:
 
-To create a production web build:
-
-```
+```bash
 flutter build web
 ```
 
-The generated files will be placed in:
+The production files will be generated in:
 
-```
+```text
 build/web/
 ```
 
 ## Database
 
-The application uses PostgreSQL through Supabase.
+Supabase PostgreSQL is used to store application data such as:
 
-The database handles data such as:
+- User profiles
+- Posts
+- Comments
+- Likes
 
-* Users / profiles
-* Posts
-* Comments
-* Likes
+Row Level Security (RLS) policies are used to control access to user-generated content and interactions.
 
-Row Level Security (RLS) policies are used to control which users can create, update, delete, and interact with data.
+## Current Limitations
 
-## Authentication
+Blogorum is currently focused on the core functionality of the website, so a few areas are still limited:
 
-Authentication is handled through Supabase Auth.
+- Mobile optimization is not yet fully polished.
+- The application is primarily designed and tested for the web.
+- Search currently focuses on post titles and usernames rather than full-text search across post content.
+- There are no notifications for likes, comments, or other activity.
+- There are no advanced post categories, tags, or filtering options yet.
+- Moderation and reporting tools are currently limited.
+- The editor is a straightforward title/body form rather than a rich-text editor.
+- There is no dedicated administrative dashboard.
+- Some UI and interaction details may still need additional accessibility and responsive-design refinement.
 
-Users can:
+## Planned Features
 
-* Register an account
-* Log in
-* Log out
-* Reset their password
-* Access authenticated features
+The following features are planned for future development:
 
-Some actions, such as liking posts, require the user to be logged in.
-
-## Search
-
-Blogorum supports searching across the feed.
-
-Search can be used to find:
-
-* Post titles
-* Posts created by a specific user
+- Improve mobile and tablet responsiveness.
+- Add richer user profile pages.
+- Add post categories and tags.
+- Add notifications for likes and comments.
+- Add richer text formatting for posts.
+- Improve search with full-text content search and filters.
+- Add post bookmarking/saved posts.
+- Add reporting and moderation tools.
+- Add an administrator dashboard.
+- Improve image compression and upload handling.
+- Add additional account and privacy settings.
+- Improve accessibility across the application.
+- Add automated testing for important application flows.
 
 ## Development
 
-Before committing changes, it is recommended to run:
+Before committing changes, run:
 
-```
+```bash
 flutter analyze
 ```
 
 and:
 
-```
+```bash
 flutter test
 ```
 
-If everything is clean, build the web version to verify that the project compiles successfully:
+It is also recommended to verify the web build:
 
-```
+```bash
 flutter build web
 ```
 
-## Roadmap
+## Project Status
 
-Potential future improvements include:
-
-* Better mobile optimization
-* More advanced profile pages
-* Notifications
-* Post categories or tags
-* Rich text editing
-* Improved image handling
-* More detailed user settings
-* Additional moderation features
+Blogorum is an actively developed project. The core blogging, authentication, commenting, liking, image upload, search, pagination, and theme functionality is implemented, while additional polish and features are planned.
 
 ## License
 
-This project is currently for educational and development purposes.
+This project is currently intended for educational and development purposes.
 
-A formal open-source license can be added later if the project is intended for public contribution or redistribution.
+A formal open-source license can be added if the project is later released for public contribution or redistribution.
 
 ---
 
