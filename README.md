@@ -160,35 +160,19 @@ Row Level Security (RLS) policies are used to control access to user-generated c
 
 ## Current Limitations
 
-Blogorum is currently focused on the core functionality of the website, so a few areas are still limited:
-
-- Mobile optimization is not yet fully polished.
-- The application is primarily designed and tested for the web.
-- Search currently focuses on post titles and usernames rather than full-text search across post content.
-- There are no notifications for likes, comments, or other activity.
-- There are no advanced post categories, tags, or filtering options yet.
-- Moderation and reporting tools are currently limited.
-- The editor is a straightforward title/body form rather than a rich-text editor.
-- There is no dedicated administrative dashboard.
-- Some UI and interaction details may still need additional accessibility and responsive-design refinement.
+- Mobile optimization still needs improvement.
+- Search is currently limited to post titles and usernames.
+- There are no notifications yet.
+- Moderation features are currently limited.
 
 ## Planned Features
 
-The following features are planned for future development:
-
-- Improve mobile and tablet responsiveness.
-- Add richer user profile pages.
+- Improve mobile responsiveness.
+- Add notifications.
 - Add post categories and tags.
-- Add notifications for likes and comments.
-- Add richer text formatting for posts.
-- Improve search with full-text content search and filters.
-- Add post bookmarking/saved posts.
-- Add reporting and moderation tools.
-- Add an administrator dashboard.
-- Improve image compression and upload handling.
-- Add additional account and privacy settings.
-- Improve accessibility across the application.
-- Add automated testing for important application flows.
+- Improve search functionality.
+- Add more user profile features.
+- Add moderation and reporting tools.
 
 ## Development
 
