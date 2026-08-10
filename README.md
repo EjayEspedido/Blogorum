@@ -173,6 +173,8 @@ Row Level Security (RLS) policies are used to control access to user-generated c
 - Improve search functionality.
 - Add more user profile features.
 - Add moderation and reporting tools.
+- Add forum corner, AKA the chika corner
+- Add notifications to other apps, specifically Discord
 
 ## Development
 
