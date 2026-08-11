@@ -1,54 +1,65 @@
 # Blogorum
 
-Blogorum is a forum-style blog website built with Flutter and Supabase. It combines a simple blogging experience with social features such as likes, comments, image uploads, search, user profiles, and post hiding.
+**Blogorum** is a forum-style blog web application built with **Flutter, Provider, go_router, and Supabase**.
+
+It combines blogging and social features, allowing users to create and manage posts, upload multiple images, interact through likes and comments, search for posts and users, manage their profiles, and hide posts from their feed.
 
 **Live Demo:** https://blogorum.netlify.app
 
 ## Features
 
 ### Authentication
-- Sign up and log in
-- Forgot password
-- Log out
-- User profiles
+
+* Email and password registration
+* Login and logout
+* Forgot password
+* Authentication-aware navigation
+* User profiles
 
 ### Posts
-- Create posts
-- Edit posts
-- Delete posts
-- Upload multiple images
-- Delete images when they are removed from a post
-- Paginated feed
-- Refresh feed
-- Hide and unhide posts
-- Post detail pages
-- Image galleries with navigation
+
+* Create, edit, and delete posts
+* Upload multiple images per post
+* Add and remove images when editing posts
+* Paginated public feed
+* Refresh feed
+* Hide and unhide posts
+* Post detail pages
+* Multiple-image galleries with navigation
 
 ### Search
-- Search posts by title
-- Search posts by username
+
+* Search posts by title
+* Search posts by username
 
 ### Likes
-- Like and unlike posts
-- Display like counts
-- Like interactions restricted to logged-in users
+
+* Like and unlike posts
+* Display like counts
+* Like interactions available to authenticated users
 
 ### Comments
-- Add comments
-- Edit comments
-- Delete comments
-- Upload images with comments
-- Display comment counts
+
+* Add, edit, and delete comments
+* Upload multiple images with comments
+* Add and remove comment images
+* Display comment counts
+
+### Profiles
+
+* View user profiles
+* Update display name
+* Upload, update, and delete profile photos
 
 ### UI
-- Responsive web layout
-- Light and dark themes
-- Sidebar navigation
-- Search bar
-- Create-post shortcut
-- User profile pages
-- Post actions menu
-- Image galleries with navigation controls
+
+* Responsive web layout
+* Light and dark themes
+* Sidebar navigation
+* Search bar
+* Create-post shortcut
+* Post actions menu
+* Image galleries with navigation controls
 
 ## Screenshots
 
@@ -86,25 +97,47 @@ Blogorum is a forum-style blog website built with Flutter and Supabase. It combi
 
 ## Tech Stack
 
-| Technology | Purpose |
-|---|---|
-| Flutter | Frontend framework |
-| Dart | Programming language |
-| Supabase | Backend platform |
-| PostgreSQL | Database |
-| Supabase Auth | Authentication |
-| Supabase Storage | Image storage |
+| Technology       | Purpose                              |
+| ---------------- | ------------------------------------ |
+| Flutter          | Cross-platform application framework |
+| Dart             | Programming language                 |
+| go_router        | Routing and navigation               |
+| Supabase         | Backend platform                     |
+| PostgreSQL       | Relational database                  |
+| Supabase Auth    | User authentication                  |
+| Supabase Storage | Image storage                        |
+
+## Architecture
+
+Blogorum uses Flutter for the application layer and Supabase for backend services.
+
+```text
+Flutter
+├── UI / Pages
+├── Reusable Components
+├── Provider
+│   ├── Authentication / Profile State
+│   └── Theme State
+├── go_router
+└── Supabase Flutter SDK
+    ├── Authentication
+    ├── PostgreSQL Database
+    └── Storage
+```
+
+Provider is used for shared application state, while local widget state is used for page-specific UI state.
+
+Supabase handles authentication, database operations, and image storage. Row Level Security (RLS) policies are used to control access to user-owned data and interactions.
 
 ## Getting Started
 
 ### Prerequisites
 
-- Flutter SDK
-- Dart SDK
-- A Supabase project
-- Git
+* Flutter SDK
+* Dart SDK
+* A Supabase project
 
-Check your Flutter installation with:
+Verify your Flutter installation:
 
 ```bash
 flutter doctor
@@ -115,8 +148,8 @@ flutter doctor
 Clone the repository:
 
 ```bash
-git clone https://github.com/EjayEspedido/Blogorum
-cd blogorum
+git clone https://github.com/EjayEspedido/Blogorum.git
+cd Blogorum
 ```
 
 Install dependencies:
@@ -127,16 +160,14 @@ flutter pub get
 
 ### Supabase Configuration
 
-Blogorum uses Supabase for authentication, database operations, and file storage.
+Blogorum requires a Supabase project configured with:
 
-Create a Supabase project and configure the required:
+* PostgreSQL database tables
+* Row Level Security (RLS) policies
+* Authentication settings
+* Storage buckets for uploaded images
 
-- Database tables
-- Row Level Security policies
-- Authentication settings
-- Storage buckets
-
-Add the project's public configuration to the application as required by the current Flutter setup.
+The application uses the public Supabase project configuration required by the Flutter client.
 
 **Never commit Supabase service-role keys, passwords, or other private credentials to the repository.**
 
@@ -160,7 +191,7 @@ Build the production web version:
 flutter build web
 ```
 
-The production files will be generated in:
+The production files are generated in:
 
 ```text
 build/web/
@@ -168,33 +199,15 @@ build/web/
 
 ## Database
 
-Supabase PostgreSQL is used to store application data such as:
+Blogorum uses Supabase PostgreSQL for application data, including:
 
-- User profiles
-- Posts
-- Comments
-- Likes
-- Hidden posts
+* User profiles
+* Posts
+* Comments
+* Likes
+* Hidden posts
 
-Row Level Security (RLS) policies are used to control access to user-generated content and interactions.
-
-## Current Limitations
-
-- Mobile optimization still needs improvement.
-- Search is currently limited to post titles and usernames.
-- There are no notifications yet.
-- Moderation features are currently limited.
-
-## Planned Features
-
-- Improve mobile responsiveness.
-- Improve search functionality, including broader keyword searching.
-- Add notifications.
-- Add post categories and tags.
-- Add more user profile features.
-- Add moderation and reporting tools.
-- Add forum corner, AKA the chika corner.
-- Add notifications to other apps, specifically Discord.
+Row Level Security policies are used to enforce access control for user-generated content and interactions.
 
 ## Development
 
@@ -204,28 +217,34 @@ Before committing changes, run:
 flutter analyze
 ```
 
-and:
+Run the test suite:
 
 ```bash
 flutter test
 ```
 
-It is also recommended to verify the web build:
+It is also recommended to verify the production web build:
 
 ```bash
 flutter build web
 ```
 
-## Project Status
+## Current Limitations
 
-Blogorum is an actively developed project. The core blogging, authentication, commenting, liking, image upload, search, pagination, post hiding, user profiles, and theme functionality is implemented, while additional polish and features are planned.
+* Mobile optimization still needs improvement.
+* Search is currently limited to post titles and usernames.
+* Notifications are not implemented yet.
+* Moderation and reporting features are not implemented yet.
 
-## License
+## Planned Features
 
-This project is currently intended for educational and development purposes.
-
-A formal open-source license can be added if the project is later released for public contribution or redistribution.
+* Improve mobile responsiveness.
+* Expand search to support broader keyword searching.
+* Add notifications.
+* Add post categories and tags.
+* Expand user profile features.
+* Add moderation and reporting tools.
 
 ---
 
-Built with Flutter and Supabase.
+**Built with Flutter and Supabase.**
