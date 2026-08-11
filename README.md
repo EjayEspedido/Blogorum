@@ -1,43 +1,54 @@
 # Blogorum
 
-Blogorum is a forum-style blog website built with Flutter and Supabase. It combines a simple blogging experience with social features such as likes, comments, image uploads, search, and user profiles.
+Blogorum is a forum-style blog website built with Flutter and Supabase. It combines a simple blogging experience with social features such as likes, comments, image uploads, search, user profiles, and post hiding.
+
+**Live Demo:** https://blogorum.netlify.app
 
 ## Features
 
-- User authentication
-  - Sign up and log in
-  - Forgot password
-  - Log out
-  - User profiles
-- Posts
-  - Create posts
-  - Edit posts
-  - Delete posts
-  - Upload multiple images
-  - Delete images when they are removed from a post
-  - Paginated feed
-  - Pull-to-refresh
-- Search
-  - Search posts by title
-  - Search posts by username
-- Likes
-  - Like and unlike posts
-  - Display like counts
-  - Like interactions restricted to logged-in users
-- Comments
-  - Add comments
-  - Edit comments
-  - Delete comments
-  - Upload images with comments
-  - Display comment counts
-- UI
-  - Responsive web layout
-  - Light and dark themes
-  - Sidebar navigation
-  - Search bar
-  - Create-post shortcut
-  - Post detail pages
-  - Image galleries with navigation controls
+### Authentication
+- Sign up and log in
+- Forgot password
+- Log out
+- User profiles
+
+### Posts
+- Create posts
+- Edit posts
+- Delete posts
+- Upload multiple images
+- Delete images when they are removed from a post
+- Paginated feed
+- Refresh feed
+- Hide and unhide posts
+- Post detail pages
+- Image galleries with navigation
+
+### Search
+- Search posts by title
+- Search posts by username
+
+### Likes
+- Like and unlike posts
+- Display like counts
+- Like interactions restricted to logged-in users
+
+### Comments
+- Add comments
+- Edit comments
+- Delete comments
+- Upload images with comments
+- Display comment counts
+
+### UI
+- Responsive web layout
+- Light and dark themes
+- Sidebar navigation
+- Search bar
+- Create-post shortcut
+- User profile pages
+- Post actions menu
+- Image galleries with navigation controls
 
 ## Screenshots
 
@@ -49,6 +60,14 @@ Blogorum is a forum-style blog website built with Flutter and Supabase. It combi
 
 ![Blogorum feed in dark mode](screenshots/feed-dark.png)
 
+### User Profile
+
+![Blogorum user profile](screenshots/profile.png)
+
+### Hidden Posts
+
+![Blogorum hidden posts](screenshots/hidden-posts.png)
+
 ### Create Post
 
 ![Blogorum create post page](screenshots/create-post.png)
@@ -57,7 +76,7 @@ Blogorum is a forum-style blog website built with Flutter and Supabase. It combi
 
 ![Blogorum post detail page](screenshots/post-detail.png)
 
-### Comments and Image Attachments
+### Comments
 
 ![Blogorum comments](screenshots/comments.png)
 
@@ -155,6 +174,7 @@ Supabase PostgreSQL is used to store application data such as:
 - Posts
 - Comments
 - Likes
+- Hidden posts
 
 Row Level Security (RLS) policies are used to control access to user-generated content and interactions.
 
@@ -168,13 +188,13 @@ Row Level Security (RLS) policies are used to control access to user-generated c
 ## Planned Features
 
 - Improve mobile responsiveness.
+- Improve search functionality, including broader keyword searching.
 - Add notifications.
 - Add post categories and tags.
-- Improve search functionality.
 - Add more user profile features.
 - Add moderation and reporting tools.
-- Add forum corner, AKA the chika corner
-- Add notifications to other apps, specifically Discord
+- Add forum corner, AKA the chika corner.
+- Add notifications to other apps, specifically Discord.
 
 ## Development
 
@@ -198,7 +218,7 @@ flutter build web
 
 ## Project Status
 
-Blogorum is an actively developed project. The core blogging, authentication, commenting, liking, image upload, search, pagination, and theme functionality is implemented, while additional polish and features are planned.
+Blogorum is an actively developed project. The core blogging, authentication, commenting, liking, image upload, search, pagination, post hiding, user profiles, and theme functionality is implemented, while additional polish and features are planned.
 
 ## License
 
