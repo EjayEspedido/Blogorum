@@ -17,6 +17,14 @@ class _ProfileState extends State<Profile> {
   final _bioController = TextEditingController();
   final _profileService = ProfileService.instance;
 
+  String _originalDisplayName = '';
+  String _originalBio = '';
+
+  bool get _hasChanges {
+    return _displayNameController.text.trim() != _originalDisplayName ||
+        _bioController.text.trim() != _originalBio;
+  }
+
   bool _isLoading = false;
 
   @override
@@ -27,6 +35,9 @@ class _ProfileState extends State<Profile> {
 
   @override
   void dispose() {
+    _displayNameController.removeListener(_onFieldChanged);
+    _bioController.removeListener(_onFieldChanged);
+
     _displayNameController.dispose();
     _bioController.dispose();
     super.dispose();
@@ -40,8 +51,20 @@ class _ProfileState extends State<Profile> {
     if (profile != null) {
       _displayNameController.text = profile.displayName;
       _bioController.text = profile.bio;
+
+      _originalDisplayName = profile.displayName.trim();
+      _originalBio = profile.bio.trim();
+
+      _displayNameController.addListener(_onFieldChanged);
+      _bioController.addListener(_onFieldChanged);
     }
 
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void _onFieldChanged() {
     if (mounted) {
       setState(() {});
     }
@@ -66,6 +89,9 @@ class _ProfileState extends State<Profile> {
           .eq('uuid', userId);
 
       await _profileService.loadCurrentProfile();
+
+      _originalDisplayName = _displayNameController.text.trim();
+      _originalBio = _bioController.text.trim();
 
       debugPrint('PROFILE UPDATED');
     } catch (e) {
@@ -101,8 +127,7 @@ class _ProfileState extends State<Profile> {
     });
 
     try {
-      final fileName =
-          'avatar_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final fileName = 'avatar_${DateTime.now().millisecondsSinceEpoch}.jpg';
 
       final storagePath = '$userId/$fileName';
 
@@ -111,9 +136,7 @@ class _ProfileState extends State<Profile> {
           .uploadBinary(
             storagePath,
             file.bytes!,
-            fileOptions: const FileOptions(
-              contentType: 'image/jpeg',
-            ),
+            fileOptions: const FileOptions(contentType: 'image/jpeg'),
           );
 
       debugPrint('IMAGE UPLOADED: $storagePath');
@@ -126,9 +149,7 @@ class _ProfileState extends State<Profile> {
 
       await supabase
           .from('profiles')
-          .update({
-            'avatar_url': imageUrl,
-          })
+          .update({'avatar_url': imageUrl})
           .eq('uuid', userId);
 
       debugPrint('AVATAR URL SAVED');
@@ -149,14 +170,63 @@ class _ProfileState extends State<Profile> {
     }
   }
 
+  Future<void> _deleteProfilePicture() async {
+    final userId = supabase.auth.currentUser?.id;
+    final profile = _profileService.currentProfile;
+
+    if (_isLoading || userId == null || profile == null) return;
+
+    final avatarUrl = profile.avatarUrl;
+
+    if (avatarUrl == null || avatarUrl.isEmpty) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Extract the storage path from the public URL.
+      const bucketPath = '/storage/v1/object/public/profile-pictures/';
+
+      final index = avatarUrl.indexOf(bucketPath);
+
+      if (index == -1) {
+        throw Exception('Could not determine avatar storage path.');
+      }
+
+      final storagePath = avatarUrl.substring(index + bucketPath.length);
+
+      await supabase.storage.from('profile-pictures').remove([storagePath]);
+
+      await supabase
+          .from('profiles')
+          .update({'avatar_url': null})
+          .eq('uuid', userId);
+
+      await _profileService.loadCurrentProfile();
+
+      debugPrint('PROFILE PICTURE DELETED');
+
+      if (mounted) {
+        setState(() {});
+      }
+    } catch (e) {
+      debugPrint('PROFILE PICTURE DELETE FAILED: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final profile = _profileService.currentProfile;
 
     if (profile == null) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
     final displayName = profile.displayName.trim().isEmpty
@@ -164,21 +234,18 @@ class _ProfileState extends State<Profile> {
         : profile.displayName;
 
     final hasAvatar =
-        profile.avatarUrl != null &&
-        profile.avatarUrl!.isNotEmpty;
+        profile.avatarUrl != null && profile.avatarUrl!.isNotEmpty;
 
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Profile',
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
+          Text('Profile', style: Theme.of(context).textTheme.titleLarge),
 
           const SizedBox(height: 24),
 
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               GestureDetector(
                 onTap: _isLoading ? null : _pickImage,
@@ -191,38 +258,51 @@ class _ProfileState extends State<Profile> {
                       ? null
                       : Text(
                           displayName[0].toUpperCase(),
-                          style: const TextStyle(
-                            fontSize: 28,
-                          ),
+                          style: const TextStyle(fontSize: 28),
                         ),
                 ),
               ),
 
               const SizedBox(width: 16),
 
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    displayName,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    profile.email,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      displayName,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+
+                    const SizedBox(height: 4),
+
+                    Text(
+                      profile.email,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+
+                    if (hasAvatar) ...[
+                      const SizedBox(height: 8),
+
+                      TextButton(
+                        onPressed: _isLoading ? null : _deleteProfilePicture,
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        child: const Text('Remove profile picture'),
+                      ),
+                    ],
+                  ],
+                ),
               ),
             ],
           ),
 
           const SizedBox(height: 32),
 
-          Text(
-            'Display name',
-            style: Theme.of(context).textTheme.labelLarge,
-          ),
+          Text('Display name', style: Theme.of(context).textTheme.labelLarge),
 
           const SizedBox(height: 8),
 
@@ -236,10 +316,7 @@ class _ProfileState extends State<Profile> {
 
           const SizedBox(height: 20),
 
-          Text(
-            'Bio',
-            style: Theme.of(context).textTheme.labelLarge,
-          ),
+          Text('Bio', style: Theme.of(context).textTheme.labelLarge),
 
           const SizedBox(height: 8),
 
@@ -258,14 +335,12 @@ class _ProfileState extends State<Profile> {
             width: double.infinity,
             height: 48,
             child: FilledButton(
-              onPressed: _isLoading ? null : _saveChanges,
+              onPressed: _isLoading || !_hasChanges ? null : _saveChanges,
               style: FilledButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
               ),
               child: _isLoading
                   ? const SizedBox(

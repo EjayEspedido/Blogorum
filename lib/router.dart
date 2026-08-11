@@ -4,6 +4,7 @@ import 'pages/login.dart';
 import 'pages/posts_page.dart';
 import 'pages/create_post.dart';
 import 'pages/edit_post.dart';
+import 'pages/PlainPage.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -40,6 +41,28 @@ final router = GoRouter(
       path: '/editPost/:id',
       builder: (context, state) {
         return EditPost(postID: state.pathParameters['id']!);
+      },
+    ),
+
+    GoRoute(
+      path: '/myProfile',
+      builder: (context, state) => const PlainPage(page: 'My Profile'),
+    ),
+    GoRoute(
+      path: '/hiddenPosts',
+      builder: (context, state) => const PlainPage(page: 'Hidden Posts'),
+    ),
+    GoRoute(
+      path: '/savedPosts',
+      builder: (context, state) => const PlainPage(page: 'Saved Posts'),
+    ),
+
+    GoRoute(
+      path: '/profile/:userId',
+      builder: (context, state) {
+        final userId = state.pathParameters['userId']!;
+
+        return PlainPage(page: 'Profile', userId: userId);
       },
     ),
   ],

@@ -8,7 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:blogorum/components/settings/profile.dart';
+import 'package:blogorum/components/settings/profileQuick.dart';
 import 'package:blogorum/components/settings/security.dart';
 import 'package:blogorum/components/settings/settings.dart';
 import 'package:blogorum/components/settings/settingsAndProfile.dart';

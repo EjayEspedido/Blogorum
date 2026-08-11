@@ -40,9 +40,8 @@ class _FeedPageState extends State<FeedPage> {
       _currentPage = page;
       _searchQuery = query;
 
-      _postsFuture = getPosts(
+      _postsFuture = _loadPostsWithoutHidden(
         page: page,
-        pageSize: _pageSize,
         searchQuery: _searchQuery,
       );
     });
@@ -54,6 +53,39 @@ class _FeedPageState extends State<FeedPage> {
         _hasNextPage = result.hasNextPage;
       });
     });
+  }
+
+  Future<PostsPage> _loadPostsWithoutHidden({
+    required int page,
+    required String searchQuery,
+  }) async {
+    final result = await getPosts(
+      page: page,
+      pageSize: _pageSize,
+      searchQuery: searchQuery,
+    );
+
+    final currentUser = supabase.auth.currentUser;
+
+    // Guests don't have hidden posts.
+    if (currentUser == null) {
+      return result;
+    }
+
+    final hidden = await supabase
+        .from('hidden_posts')
+        .select('post_id')
+        .eq('user_id', currentUser.id);
+
+    final hiddenPostIds = hidden
+        .map<int>((row) => row['post_id'] as int)
+        .toSet();
+
+    final filteredPosts = result.posts
+        .where((post) => !hiddenPostIds.contains(post['id']))
+        .toList();
+
+    return PostsPage(posts: filteredPosts, hasNextPage: result.hasNextPage);
   }
 
   void _searchPosts(String query) {
@@ -175,6 +207,10 @@ class _FeedPageState extends State<FeedPage> {
                                   onRefresh: _refresh,
                                   child: MasonryGridView.count(
                                     padding: const EdgeInsets.all(12),
+                                    physics: const BouncingScrollPhysics(
+                                      parent: AlwaysScrollableScrollPhysics(),
+                                    ),
+                                    cacheExtent: 1000,
                                     crossAxisCount: crossAxisCount,
                                     crossAxisSpacing: 12,
                                     itemCount: posts.length,
@@ -242,6 +278,7 @@ class _FeedPageState extends State<FeedPage> {
       images: images,
       createdAt: DateTime.parse(post['created_at']),
       author: profile?['display_name'] ?? 'Unknown',
+      authorId: post['uuid'],
       comments: commentCount,
       postID: post['id'],
     );

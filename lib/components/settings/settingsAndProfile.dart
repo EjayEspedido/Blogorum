@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_text_theme.dart';
-import 'profile.dart';
-import 'settings.dart';
-import 'security.dart';
+import 'profileQuick.dart';
+// import 'settings.dart';
+// import 'security.dart';
 
 class SettingsAndProfile extends StatefulWidget {
   final String user;

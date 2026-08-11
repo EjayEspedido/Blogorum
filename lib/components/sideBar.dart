@@ -33,6 +33,8 @@ class _sideBarState extends State<sideBar> {
     }
   }
 
+  bool _menuOpen = false;
+
   @override
   Widget build(BuildContext context) {
     final boxShadows =
@@ -53,61 +55,79 @@ class _sideBarState extends State<sideBar> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          ListenableBuilder(
-            listenable: _profileService,
-            builder: (context, child) {
-              final profile = _profileService.currentProfile;
+          Column(
+            children: [
+              ListenableBuilder(
+                listenable: _profileService,
+                builder: (context, child) {
+                  final profile = _profileService.currentProfile;
 
-              final hasAvatar =
-                  profile?.avatarUrl != null &&
-                  profile!.avatarUrl!.isNotEmpty;
+                  final hasAvatar =
+                      profile?.avatarUrl != null &&
+                      profile!.avatarUrl!.isNotEmpty;
 
-              return MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: GestureDetector(
-                  onTap: () {
-                    if (profile != null) {
-                      _showProfileDialog();
-                    } else {
-                      context.go('/login');
-                    }
-                  },
-                  child: CircleAvatar(
-                    radius: 25,
-                    backgroundImage: hasAvatar
-                        ? NetworkImage(profile.avatarUrl!)
-                        : null,
-                    child: hasAvatar
-                        ? null
-                        : Text(
-                            profile != null &&
-                                    profile.displayName.isNotEmpty
-                                ? profile.displayName[0].toUpperCase()
-                                : 'G',
-                          ),
-                  ),
+                  return MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: () {
+                        if (profile != null) {
+                          _showProfileDialog();
+                        } else {
+                          context.go('/login');
+                        }
+                      },
+                      child: CircleAvatar(
+                        radius: 25,
+                        backgroundImage: hasAvatar
+                            ? NetworkImage(profile.avatarUrl!)
+                            : null,
+                        child: hasAvatar
+                            ? null
+                            : Text(
+                                profile != null &&
+                                        profile.displayName.isNotEmpty
+                                    ? profile.displayName[0].toUpperCase()
+                                    : 'G',
+                              ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 16),
+              if (_authService.isLoggedIn)
+                Column(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.home, color: Color(0xFFF06D22)),
+                      onPressed: () {
+                        context.go('/');
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.person, color: Color(0xFFF06D22)),
+                      onPressed: () {
+                        context.go('/myProfile');
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.visibility_off,
+                        color: Color(0xFFF06D22),
+                      ),
+                      onPressed: () {
+                        context.go('/hiddenPosts');
+                      },
+                    ),
+                  ],
                 ),
-              );
-            },
+            ],
           ),
-
-          // IconButton(
-          //   icon: const Icon(
-          //     Icons.menu,
-          //     color: Color(0xFFF06D22),
-          //   ),
-          //   onPressed: () {},
-          // ),
+          
 
           IconButton(
-            icon: Icon(
-              _authService.isLoggedIn
-                  ? Icons.logout
-                  : Icons.login,
-            ),
-            tooltip: _authService.isLoggedIn
-                ? 'Logout'
-                : 'Login',
+            icon: Icon(_authService.isLoggedIn ? Icons.logout : Icons.login),
+            tooltip: _authService.isLoggedIn ? 'Logout' : 'Login',
             onPressed: () async {
               if (!_authService.isLoggedIn) {
                 context.go('/login');
@@ -140,9 +160,7 @@ class _sideBarState extends State<sideBar> {
       builder: (_) => Dialog(
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: SettingsAndProfile(
-            user: profile?.displayName ?? 'Guest',
-          ),
+          child: SettingsAndProfile(user: profile?.displayName ?? 'Guest'),
         ),
       ),
     );

@@ -17,6 +17,8 @@ class PostCard extends StatefulWidget {
   final String author;
   final int comments;
   final int postID;
+  final VoidCallback? onUnhide;
+  final String authorId;
 
   const PostCard({
     super.key,
@@ -27,6 +29,8 @@ class PostCard extends StatefulWidget {
     this.author = 'Unknown',
     this.comments = 0,
     required this.postID,
+    this.onUnhide,
+    required this.authorId,
   });
 
   @override
@@ -36,6 +40,7 @@ class PostCard extends StatefulWidget {
 class PostCardState extends State<PostCard> {
   bool _isLiked = false;
   int _likeCount = 0;
+  bool _isHidden = false;
 
   @override
   void initState() {
@@ -97,8 +102,37 @@ class PostCardState extends State<PostCard> {
     }
   }
 
+  Future<void> _hidePost() async {
+    final currentUser = supabase.auth.currentUser;
+
+    if (currentUser == null) return;
+
+    try {
+      await supabase.from('hidden_posts').insert({
+        'user_id': currentUser.id,
+        'post_id': widget.postID,
+      });
+
+      if (!mounted) return;
+
+      setState(() {
+        _isHidden = true;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Failed to hide post.')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_isHidden) {
+      return const SizedBox.shrink();
+    }
+
     final formattedRelativeDate = FlutterDateFormatter.formatRelativeDateTime(
       widget.createdAt,
       locale: 'en',
@@ -112,6 +146,47 @@ class PostCardState extends State<PostCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Top-right menu
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                if (isLoggedIn)
+                  PopupMenuButton<String>(
+                    tooltip: 'More options',
+                    icon: const Icon(Icons.more_vert),
+                    onSelected: (value) {
+                      if (value == 'hide') {
+                        _hidePost();
+                      }
+
+                      if (value == 'unhide') {
+                        widget.onUnhide?.call();
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      PopupMenuItem<String>(
+                        value: widget.onUnhide != null ? 'unhide' : 'hide',
+                        child: Row(
+                          children: [
+                            Icon(
+                              widget.onUnhide != null
+                                  ? Icons.visibility
+                                  : Icons.visibility_off_outlined,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              widget.onUnhide != null
+                                  ? 'Unhide post'
+                                  : 'Hide post',
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+
             if (widget.images.isNotEmpty) PostCarousel(images: widget.images),
 
             const SizedBox(height: 8),
@@ -127,15 +202,34 @@ class PostCardState extends State<PostCard> {
               overflow: TextOverflow.ellipsis,
             ),
 
-            Text(
-              'by ${widget.author}. Created $formattedRelativeDate',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(
-                  context,
-                ).colorScheme.onSurface.withValues(alpha: 0.6),
-              ),
-            ),
+            Row(
+              children: [
+                Text('by ', style: Theme.of(context).textTheme.bodySmall),
+                TextButton(
+                  onPressed: () {
+                    context.push('/profile/${widget.authorId}');
+                  },
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Text(
+                    widget.author,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
 
+                Text(
+                  '. Created $formattedRelativeDate',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.6),
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 8),
 
             Row(
@@ -154,6 +248,7 @@ class PostCardState extends State<PostCard> {
                 ),
 
                 Text('$_likeCount'),
+
                 IconButton(
                   tooltip: 'Comments',
                   icon: const Icon(Icons.comment),
