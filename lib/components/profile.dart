@@ -140,16 +140,16 @@ class _ProfileState extends State<Profile> {
                           ),
                         ],
 
-                        if (isMyProfile) ...[
-                          const SizedBox(height: 16),
-                          OutlinedButton.icon(
-                            onPressed: () {
-                              context.go('/editProfile');
-                            },
-                            icon: const Icon(Icons.edit),
-                            label: const Text('Edit Profile'),
-                          ),
-                        ],
+                        // if (isMyProfile) ...[
+                        //   const SizedBox(height: 16),
+                        //   OutlinedButton.icon(
+                        //     onPressed: () {
+                        //       context.go('/editProfile');
+                        //     },
+                        //     icon: const Icon(Icons.edit),
+                        //     label: const Text('Edit Profile'),
+                        //   ),
+                        // ],
                       ],
                     ),
                   ),
